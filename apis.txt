@@ -1,0 +1,135 @@
+1. Регистрация нового пользователя
+
+fetch('http://localhost:3333/api/auth/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+   body: JSON.stringify({
+    userName: 'john_doe',
+    fullName: 'John Doe',
+    email: 'john.doe@example.com',
+    password: 'securePassword123',
+  }),
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));
+
+---
+
+2. Вход пользователя
+
+fetch('http://localhost:3333/api/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+   loginInput: 'john.doe@example.com', // Или 'john_doe' для username
+    password: 'securePassword123'
+  })
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Login success:', data);
+  // Сохраняем токен в localStorage для использования в дальнейших запросах
+  localStorage.setItem('token', data.token);
+})
+.catch(error => console.error('Error:', error));
+
+
+---
+
+3. Изменение пароля
+
+fetch('http://localhost:3333/api/auth/change-password', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}` // Добавляем токен авторизации
+  },
+  body: JSON.stringify({
+    newPassword: 'newpassword123'
+  })
+})
+.then(response => response.json())
+.then(data => console.log('Password changed successfully:', data))
+.catch(error => console.error('Error:', error));
+
+
+---
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+4. Изменение email добавить двоэтапку с qr кодом
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+fetch('http://localhost:3333/api/auth/change-email', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  },
+  body: JSON.stringify({
+    newEmail: 'newemail@example.com'
+  })
+})
+.then(response => response.json())
+.then(data => console.log('Email changed successfully:', data))
+.catch(error => console.error('Error:', error));
+
+---
+
+5. Выход из системы (logout)
+fetch('http://localhost:3333/api/auth/logout', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+  },
+})
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    };
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data.message); // Выводим сообщение
+    localStorage.removeItem('token'); // Удаляем токен из localStorage
+  })
+  .catch((error) => console.error('Logout error:', error.message));
+
+---
+
+6. Удаление аккаунта
+
+fetch('http://localhost:3333/api/auth/delete', {
+  method: 'DELETE',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+  },
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+    if (data.message === 'Account deleted successfully') {
+     localStorage.removeItem('token'); // или localStorage.clear(); Очистка всех данных из localStorage 
+    }
+  })
+  .catch((error) => console.error('Error:', error));
+---  
+
+////////////////////////////////////////////////////////
+ Админ панель
+1. Взять всех юзеров из базы
+
+fetch('https://localhost:3333/api/admin/users', {
+  method: 'GET',
+  headers: {
+'Authorization':` Bearer ${localStorage.getItem('token')}`,
+'Content-Type':'application/json'
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));
