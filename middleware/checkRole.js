@@ -7,7 +7,7 @@ function checkRole(requiredRole) {
     };
     console.log(req.user.role)
     console.log(requiredRole);
-    if (rolesHierarchy[req.user.role] < rolesHierarchy[requiredRole]) {
+    if (rolesHierarchy[req.user.role] > rolesHierarchy[requiredRole]) {
       return res.status(403).json({ error: 'Access denied' });
     }
     next();
